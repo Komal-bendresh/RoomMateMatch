@@ -13,7 +13,7 @@ const roomSchema = new mongoose.Schema({
       name: String,
     },
   ],
-  maxOccupancy: Number,
+  maxOccupancy: { type: Number, default: 1 },
   isAvailable: {
     type: Boolean,
     default: true,
@@ -21,7 +21,6 @@ const roomSchema = new mongoose.Schema({
   // Preference-related traits
   floorLevel: Number,
   hasWindow: Boolean,
-  hasAC: Boolean,
   hasBalcony: Boolean,
 });
 

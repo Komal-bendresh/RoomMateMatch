@@ -8,10 +8,10 @@ async function getMatchFromGPT(newUser, otherUsers) {
 You are a roommate-matching AI. Compare one new user to a list of previous users based on their lifestyle and preferences.
 
 Match on:
-- Cleanliness
 - Sleep Schedule
-- Guest Policy
+- Cleanliness
 - Stress Management
+- Guest Policy
 - Downtime Style
 
 

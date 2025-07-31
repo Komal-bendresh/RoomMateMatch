@@ -34,4 +34,20 @@ const savePreferences = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getUsers,savePreferences };
+const updateUserPreferences = async (req, res) => {
+  const { id } = req.params;
+  const { roomPreferences } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      { roomPreferences },
+      { new: true }
+    );
+    res.json({ message: "Preferences updated", user });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update preferences" });
+  }
+};
+
+module.exports = { createUser, getUsers,savePreferences,updateUserPreferences};

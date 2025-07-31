@@ -1,3 +1,4 @@
+// ✅ utils/assignRoom.js
 const Room = require("../models/Room");
 const User = require("../models/User");
 
@@ -5,7 +6,7 @@ function scoreRoom(room, preferences) {
   let score = 0;
   if (preferences?.window === "yes" && room.hasWindow) score += 1;
   if (preferences?.balcony === "yes" && room.hasBalcony) score += 1;
-  if (preferences?.wantsAC && room.hasAC) score += 1;
+
   if (
     preferences?.preferredFloorLevel &&
     preferences.preferredFloorLevel !== "any" &&
@@ -17,8 +18,8 @@ function scoreRoom(room, preferences) {
 }
 
 async function assignRoom(userId, userName, matchName) {
-  const user = await User.findById(userId).lean();
-  const matchUser = await User.findOne({ name: matchName }).lean(); // assuming name is unique for now
+  const user = await User.findById(userId);
+  const matchUser = await User.findOne({ name: matchName });
 
   if (!user || !matchUser) return { assignedRoom: null, type: "none" };
 
@@ -47,6 +48,14 @@ async function assignRoom(userId, userName, matchName) {
     if (bestTwinRoom.occupants.length === bestTwinRoom.maxOccupancy)
       bestTwinRoom.isAvailable = false;
     await bestTwinRoom.save();
+
+    user.assignedRoom = {
+      roomNumber: bestTwinRoom.roomNumber,
+      type: bestTwinRoom.type,
+      matchName: matchUser.name,
+    };
+    await user.save();
+
     return {
       assignedRoom: bestTwinRoom.roomNumber,
       type: "twin",
@@ -75,6 +84,14 @@ async function assignRoom(userId, userName, matchName) {
     bestSingleRoom.occupants.push({ userId, name: userName });
     bestSingleRoom.isAvailable = false;
     await bestSingleRoom.save();
+
+    user.assignedRoom = {
+      roomNumber: bestSingleRoom.roomNumber,
+      type: bestSingleRoom.type,
+      matchName: null,
+    };
+    await user.save();
+
     return {
       assignedRoom: bestSingleRoom.roomNumber,
       type: "single",

@@ -16,11 +16,14 @@ const userSchema = new mongoose.Schema({
 },
 roomPreferences: {
   window: String,                // "yes", "no", "no preference"
-  preferredFloorLevel: String,  // "1", "2", "3", "any"
-  wantsAC: Boolean,             // true / false
+  preferredFloorLevel: String,  // "1", "2", "3", "any"        
   balcony: String               // "yes", "no", "no preference"
+},
+assignedRoom: {
+  roomNumber: String,
+  type: String, // 'single' or 'twin'
+  matchName: String, // optional
 }
-
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

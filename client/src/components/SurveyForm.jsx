@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import RoomPreferenceForm from "./RoomPreferenceForm";
 import axios from "axios";
 
 const SurveyForm = () => {
@@ -36,6 +37,7 @@ const SurveyForm = () => {
   };
 
   return (
+     <>
     <form onSubmit={handleSubmit} className="space-y-4">
       {Object.entries(formData).map(([key, value]) => (
         <div key={key}>
@@ -57,7 +59,10 @@ const SurveyForm = () => {
       >
         Submit Preferences
       </button>
+
     </form>
+    <RoomPreferenceForm />
+   </>
   );
 };
 
