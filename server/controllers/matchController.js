@@ -1,43 +1,46 @@
-const axios = require("axios"); // if calling external Python or GPT API
-const getMatchFromGPT = require("../utils/gptMatch"); //
-const User = require("../models/User");
+const getMatchFromGPT = require("../utils/gptMatch");
+const assignRoom = require("../utils/assignRoom");
 const Match = require("../models/Match");
+const User = require("../models/User");
 
- const matchUser=   async (req, res) => {
+exports.matchUser = async (req, res) => {
   const { userId } = req.body;
 
   try {
     const newUser = await User.findById(userId).lean();
-    if (!newUser) return res.status(404).json({ error: "User not found" });
-
     const otherUsers = await User.find({ _id: { $ne: userId } }).lean();
 
-    if (otherUsers.length === 0) {
-      const newMatch = new Match({
+    if (!newUser || otherUsers.length === 0) {
+      const fallbackMatch = new Match({
         userId,
-        matchName: "No match available yet",
+        userName: newUser?.name,
+        matchName: "No match available",
         score: 0,
-        reason: "There are no other users in the system to compare with. Try again later.",
+        reason: "No other users found",
+        assignedRoom: null,
       });
-      await newMatch.save();
-      return res.json({ message: "No match found. Saved default entry.", match: newMatch });
+      await fallbackMatch.save();
+      return res.json({ message: "No match found", match: fallbackMatch });
     }
 
     const { matchName, score, reason } = await getMatchFromGPT(newUser, otherUsers);
 
+    const roomResult = await assignRoom(userId, newUser.name, matchName);
+
     const newMatch = new Match({
       userId,
+      userName: newUser.name,
       matchName,
       score,
       reason,
+      assignedRoom: roomResult.assignedRoom,
     });
+
     await newMatch.save();
 
-    res.json({ message: "Match saved", match: newMatch });
+    res.json({ message: "Match + Room assigned", match: newMatch });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Match process failed" });
+    res.status(500).json({ error: "Matching failed" });
   }
 };
-
-module.exports={matchUser}

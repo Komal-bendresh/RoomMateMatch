@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema({
   guestPolicy: { type: String, enum: ['Strict', 'Flexible', 'Open'], default: 'Flexible' },
   foodPreference: { type: String, enum: ['Veg', 'Non-Veg', 'Mixed'], default: 'Mixed' },
   studyHabits: { type: String, enum: ['Quiet', 'Collaborative', 'Flexible'], default: 'Flexible' }
+},
+roomPreferences: {
+  window: String,                // "yes", "no", "no preference"
+  preferredFloorLevel: String,  // "1", "2", "3", "any"
+  wantsAC: Boolean,             // true / false
+  balcony: String               // "yes", "no", "no preference"
 }
 
 }, { timestamps: true });
