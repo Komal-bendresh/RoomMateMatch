@@ -11,9 +11,14 @@ const SurveyForm = () => {
   });
 
   useEffect(() => {
-    window.handleOmnidimSurvey = (data) => {
-      setFormData(data);
-    };
+    
+   try {
+     window.handleOmnidimSurvey = (data) => {
+       setFormData(data);
+     };
+   } catch (error) {
+      console.error("Omnidim widget failed to initialize:", e);
+   }
   }, []);
 
   const handleSubmit = async (e) => {
