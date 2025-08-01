@@ -17,15 +17,20 @@ const getUsers = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const getUserById = async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
+};
 
 const savePreferences = async (req, res) => {
-  const { cleanliness, sleepSchedule, guestPolicy, foodPreference, studyHabits } = req.body;
+  const { cleanliness, sleepSchedule, StressManagement, guestPolicy, DowntimeStyle } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    user.preferences = { cleanliness, sleepSchedule, guestPolicy, foodPreference, studyHabits };
+    user.preferences = { cleanliness, sleepSchedule, StressManagement, guestPolicy, DowntimeStyle };
     await user.save();
 
     res.status(200).json({ message: 'Preferences saved successfully', preferences: user.preferences });
@@ -50,4 +55,4 @@ const updateUserPreferences = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getUsers,savePreferences,updateUserPreferences};
+module.exports = { createUser, getUsers,savePreferences,updateUserPreferences,getUserById};

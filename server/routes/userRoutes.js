@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const { createUser, getUsers,savePreferences,updateUserPreferences } = require('../controllers/userController');
+const { createUser, getUsers,savePreferences,updateUserPreferences ,getUserById} = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.post('/', createUser);
 router.get('/', getUsers);
+
 router.post('/preferences', protect, savePreferences);
 router.put('/:id/preferences', updateUserPreferences);
-
+router.get("/:id", getUserById);
 
 // Omnidim webhook updates only preferences for an existing user
 router.post('/webhook', async (req, res) => {

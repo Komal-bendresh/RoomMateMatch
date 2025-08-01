@@ -25,6 +25,8 @@ app.use('/api/v2/users', require('./routes/userRoutes'));
 app.use('/api/v2/auth', require('./routes/authRoutes'));
 app.use('/api/v2/match', require('./routes/match'));
 app.use('/api/v2/assign', require('./routes/assign'));
+const playgroundRoutes = require('./routes/playgroundRoutes');
+app.use('/api/v2', playgroundRoutes);
 
 app.get('/', (req, res) => {
   res.send('roomate backend is running ');

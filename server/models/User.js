@@ -7,13 +7,34 @@ const userSchema = new mongoose.Schema({
   dob: { type: Date, required: true },
   password: { type: String, required: true },
 
-  preferences: {
-  cleanliness: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
-  sleepSchedule: { type: String, enum: ['Early Bird', 'Night Owl', 'Flexible'], default: 'Flexible' },
-  guestPolicy: { type: String, enum: ['Strict', 'Flexible', 'Open'], default: 'Flexible' },
-  foodPreference: { type: String, enum: ['Veg', 'Non-Veg', 'Mixed'], default: 'Mixed' },
-  studyHabits: { type: String, enum: ['Quiet', 'Collaborative', 'Flexible'], default: 'Flexible' }
-},
+ preferences: {
+   sleepSchedule: {
+    type: String,
+    enum: ['Early bird', 'Night owl'],
+   
+  },
+  cleanliness: {
+    type: String,
+    enum: ['High', 'Moderate', 'Low'],
+   
+  },
+ 
+   StressManagement: {
+    type: String,
+    enum: ['Journaling', 'Talking', 'Meditating', 'Other'],
+    
+  },
+  guestPolicy: {
+    type: String,
+    enum: ['Often', 'Occasionally', 'Rarely'],
+    
+  },
+  DowntimeStyle: {
+    type: String,
+    enum: ['Active', 'Quiet'],
+   
+  }
+ },
 roomPreferences: {
   window: String,                // "yes", "no", "no preference"
   preferredFloorLevel: String,  // "1", "2", "3", "any"        
@@ -23,7 +44,13 @@ assignedRoom: {
   roomNumber: String,
   type: String, // 'single' or 'twin'
   matchName: String, // optional
-}
+},
+agreements: [
+  {
+    clause: String,
+    createdAt: { type: Date, default: Date.now },
+  }
+],
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
