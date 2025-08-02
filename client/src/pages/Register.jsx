@@ -69,7 +69,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/v2/auth/register", form, {
+      const res = await API.post("/auth/register", form, {
         withCredentials: true,
       });
       login(res.data.user); // Store user in context + localStorage

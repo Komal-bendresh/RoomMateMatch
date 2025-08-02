@@ -168,8 +168,8 @@ const MatchButton = () => {
     try {
       console.log("Sending userId to backend:", user?._id);
 
-      const res = await axios.post("http://localhost:5000/api/v2/match", {
-        userId: user._id, // ✅ FIXED: use _id
+      const res = await API.post("/match", {
+        userId: user._id, //
       });
 
       console.log("✅ Match response:", res.data);
