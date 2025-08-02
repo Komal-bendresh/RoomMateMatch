@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminDashboard from "./pages/AdminDashboard";
 import SurveyPage from "./pages/SurveyPage";
 import Layout from "./components/Layout";
 import RoomAssignmentResult from "./pages/RoomAssignmentResult";
