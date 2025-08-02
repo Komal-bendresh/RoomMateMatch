@@ -13,7 +13,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',     // ✅ Exact frontend URL
+  origin: 'https://room-mate-match-izrf.vercel.app/',     // ✅ Exact frontend URL
   credentials: true,                   // ✅ Allow credentials
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
