@@ -1,69 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import API from '../../api'; // your axios instance
 
-const getScoreBadge = (score) => {
-  if (score >= 80) return { label: "High", color: "bg-green-100 text-green-700 border-green-300" };
-  if (score >= 50) return { label: "Medium", color: "bg-yellow-100 text-yellow-700 border-yellow-300" };
-  return { label: "Low", color: "bg-red-100 text-red-700 border-red-300" };
-};
+export default function MatchResult() {
+  const { userId } = useParams(); // assuming route like /result/:userId
+  const [matchData, setMatchData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-const MatchResult = ({ matchName, score, explanation, room }) => {
-  const { label, color } = getScoreBadge(score);
-
-  const handleDownload = () => {
-    const content = `Match: ${matchName}\nScore: ${score} (${label})\nRoom: ${room}\nExplanation: ${explanation}`;
-    const blob = new Blob([content], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "match_result.txt";
-    link.click();
-  };
-
-  const handleShare = async () => {
-    const message = `🎯 Match Result\nName: ${matchName}\nScore: ${score} (${label})\nRoom: ${room}`;
-    if (navigator.share) {
+  useEffect(() => {
+    const fetchMatch = async () => {
       try {
-        await navigator.share({ title: "Roommate Match Result", text: message });
-      } catch (err) {
-        alert("Sharing failed.");
+        const res = await API.get(`/match/${userId}`);
+        setMatchData(res.data);
+      } catch (error) {
+        console.error('Error fetching match:', error);
+      } finally {
+        setLoading(false);
       }
-    } else {
-      alert("Share API not supported.");
-    }
+    };
+    fetchMatch();
+  }, [userId]);
+
+  const getScoreBadge = (score) => {
+    if (score >= 75) return 'bg-green-500';
+    if (score >= 50) return 'bg-yellow-500';
+    return 'bg-red-500';
   };
+
+  if (loading) return <p className="text-center mt-8">Loading...</p>;
+  if (!matchData) return <p className="text-center mt-8">No match found.</p>;
 
   return (
-    <div className="max-w-2xl mx-auto mt-16 px-6 py-8 bg-white shadow-2xl rounded-2xl border">
-      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">🎯 Your Match Result</h2>
-      <div className="space-y-6">
-        <div className="flex justify-between">
-          <span className="text-gray-600 font-medium">Match Name:</span>
-          <span className="text-gray-900 font-semibold">{matchName}</span>
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Your Roommate Match Result</h1>
+
+      <div className="bg-white shadow rounded p-4 space-y-4">
+        <div>
+          <p className="text-sm text-gray-500">Match Name</p>
+          <h2 className="text-lg font-semibold">{matchData.matchName}</h2>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600 font-medium">Score:</span>
-          <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${color}`}>
-            {score} ({label})
+
+        <div>
+          <p className="text-sm text-gray-500">Compatibility Score</p>
+          <span className={`inline-block px-3 py-1 rounded-full text-white ${getScoreBadge(matchData.score)}`}>
+            {matchData.score}%
           </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600 font-medium">Assigned Room:</span>
-          <span className="text-gray-900 font-semibold">{room}</span>
-        </div>
+
         <div>
-          <p className="text-gray-600 font-medium">Explanation:</p>
-          <p className="text-gray-700 mt-2 text-sm leading-relaxed">{explanation}</p>
+          <p className="text-sm text-gray-500">Explanation</p>
+          <p className="text-gray-700">{matchData.explanation}</p>
         </div>
-        <div className="flex justify-end gap-4 pt-4">
-          <button onClick={handleShare} className="px-5 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all">
-            Share
+
+        <div>
+          <p className="text-sm text-gray-500">Assigned Room</p>
+          <p className="font-medium">{matchData.assignedRoom || 'Not assigned yet'}</p>
+        </div>
+
+        {/* Optional: Download/Share */}
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={() => window.print()}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Download as PDF
           </button>
-          <button onClick={handleDownload} className="px-5 py-2 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-all">
-            Download
+          <button
+            onClick={() => navigator.share && navigator.share({ title: 'My Roommate Match', text: JSON.stringify(matchData) })}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Share
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default MatchResult;
+}

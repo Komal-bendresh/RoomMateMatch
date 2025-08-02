@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import SurveyQuestionCard from '../components/SurveyQuestionCard';
 
-import RoomAssignmentResult from '../pages/RoomAssignmentResult';
+import RoomPreferenceForm from '../components/RoomPreferenceForm';
+
+import API from '../../api'; // adjust path based on your project
+import { useAuth } from '../../AuthContext'; 
+
+import MatchButton from "../components/MatchButton";
 
 const SurveyPage = () => {
   const [answers, setAnswers] = useState({
@@ -79,13 +84,53 @@ const SurveyPage = () => {
   };
 
  
+const handleSubmit = async () => {
+  if (isFormComplete) {
+    const enumMapping = {
+      dailyRhythm: {
+        early: 'EARLY_BIRD',
+        night: 'NIGHT_OWL'
+      },
+      cleanliness: {
+        'very-clean': 'VERY_CLEAN',
+        clean: 'CLEAN',
+        relaxed: 'RELAXED'
+      },
+      stressHandling: {
+        journaling: 'JOURNALING',
+        talking: 'TALKING',
+        meditating: 'MEDITATING',
+        other: 'OTHER'
+      },
+      guestsFrequency: {
+        often: 'OFTEN',
+        occasionally: 'OCCASIONALLY',
+        rarely: 'RARELY'
+      },
+      downtimeStyle: {
+        active: 'ACTIVE',
+        quiet: 'QUIET'
+      }
+    };
 
-  const handleSubmit = () => {
-    if (isFormComplete) {
-      console.log('Survey answers:', answers);
+    const mappedAnswers = {
+      sleepSchedule: enumMapping.dailyRhythm[answers.dailyRhythm],
+      cleanliness: enumMapping.cleanliness[answers.cleanliness],
+      StressManagement: enumMapping.stressHandling[answers.stressHandling],
+      guestPolicy: enumMapping.guestsFrequency[answers.guestsFrequency],
+      DowntimeStyle: enumMapping.downtimeStyle[answers.downtimeStyle]
+    };
+
+    try {
+      const res = await API.post('/users/preferences', mappedAnswers);
+      console.log('✅ Preferences saved:', res.data);
       alert('Preferences submitted successfully! 🎉');
+    } catch (err) {
+      console.error('❌ Failed to save preferences:', err.response?.data || err.message);
+      alert('Something went wrong while saving preferences.');
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 py-12 px-4 flex justify-center items-start">
@@ -131,7 +176,8 @@ const SurveyPage = () => {
           </p>
         </div>
       </div>
-      <RoomAssignmentResult/>
+      <RoomPreferenceForm/>
+       <MatchButton/>
     </div>
   );
 };

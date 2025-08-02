@@ -1,13 +1,13 @@
 import { useState } from "react";
-import axios from "axios";
-import { useAuth } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
-import API from "../../api";
+import API from "../../api"; // your axios instance
+import { useAuth } from "../../AuthContext";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { login } = useAuth();
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,39 +15,47 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     try {
-      const res = await API.post('/auth/login', form, {
-        withCredentials: true,
-      });
-      login(res.data.user);
-      console.log("successful");
-      
-     
+      const res = await API.post("/auth/login", form);
+      const { user, token } = res.data;
+
+      // ✅ Save both user and token
+      login({ user, token });
+
+      navigate("/survay"); // or wherever you want to go after login
     } catch (err) {
-       console.error("❌ Login error:", err);  // Add this
-    alert(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto bg-white rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
-      {["email", "password"].map((field) => (
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
-          key={field}
-          type={field === "password" ? "password" : "text"}
-          name={field}
-          placeholder={field}
-          value={form[field]}
+          name="email"
+          value={form.email}
           onChange={handleChange}
-          className="block w-full mb-2 p-2 border"
-          required
+          placeholder="Email"
+          type="email"
+          className="w-full border p-2 rounded"
         />
-      ))}
-      <button type="submit" className="bg-green-500 text-white px-4 py-2">Login</button>
-    </form>
+        <input
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          placeholder="Password"
+          type="password"
+          className="w-full border p-2 rounded"
+        />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+          Login
+        </button>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+      </form>
+    </div>
   );
 };
 
 export default Login;
-

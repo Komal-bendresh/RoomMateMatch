@@ -6,7 +6,7 @@ const RoomPreferenceForm = () => {
     const [userId, setUserId] = useState("");
         useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
-        if (user && user._id) setUserId(user._id);
+        if (user && user.id) setUserId(user.id);
         }, []);
 
   const [formData, setFormData] = useState({
@@ -27,7 +27,10 @@ const RoomPreferenceForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!userId) {
+    alert("User not found. Please login again.");
+    return;
+  }
     try {
      await API.put(`/users/${userId}/preferences`, {
   roomPreferences: {
