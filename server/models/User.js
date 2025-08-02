@@ -7,50 +7,46 @@ const userSchema = new mongoose.Schema({
   dob: { type: Date, required: true },
   password: { type: String, required: true },
 
- preferences: {
-   sleepSchedule: {
-    type: String,
-    enum: ['Early bird', 'Night owl'],
-   
+  preferences: {
+    sleepSchedule: { type: String, enum: ['EARLY_BIRD', 'NIGHT_OWL'] },
+    cleanliness: { type: String, enum: ['VERY_CLEAN', 'CLEAN', 'RELAXED'] },
+    StressManagement: { type: String, enum: ['JOURNALING', 'TALKING', 'MEDITATING', 'OTHER'] },
+    guestPolicy: { type: String, enum: ['OFTEN', 'OCCASIONALLY', 'RARELY'] },
+    DowntimeStyle: { type: String, enum: ['ACTIVE', 'QUIET'] },
   },
-  cleanliness: {
-    type: String,
-    enum: ['High', 'Moderate', 'Low'],
-   
+
+  roomPreferences: {
+    window: String,                // "yes", "no", "no preference"
+    preferredFloorLevel: String,  // "1", "2", "3", "any"        
+    balcony: String               // "yes", "no", "no preference"
   },
- 
-   StressManagement: {
-    type: String,
-    enum: ['Journaling', 'Talking', 'Meditating', 'Other'],
-    
+
+  assignedRoom: {
+    roomNumber: { type: String },
+    type: { type: String, enum: ["single", "twin"] }
   },
-  guestPolicy: {
-    type: String,
-    enum: ['Often', 'Occasionally', 'Rarely'],
-    
+
+  agreements: [
+    {
+      clause: String,
+      createdAt: { type: Date, default: Date.now },
+    }
+  ],
+
+  // Store ID of matched user (optional)
+  matchUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
   },
-  DowntimeStyle: {
-    type: String,
-    enum: ['Active', 'Quiet'],
-   
-  }
- },
-roomPreferences: {
-  window: String,                // "yes", "no", "no preference"
-  preferredFloorLevel: String,  // "1", "2", "3", "any"        
-  balcony: String               // "yes", "no", "no preference"
-},
-assignedRoom: {
-  roomNumber: String,
-  type: String, // 'single' or 'twin'
-  matchName: String, // optional
-},
-agreements: [
-  {
-    clause: String,
-    createdAt: { type: Date, default: Date.now },
-  }
-],
+
+  // Store match details directly (safe for UI display)
+  matchDetails: {
+    name: String,
+    score: Number,
+    reason: String,
+  },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

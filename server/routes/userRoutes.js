@@ -7,7 +7,7 @@ const { protect } = require('../middleware/authMiddleware');
 router.post('/', createUser);
 router.get('/', getUsers);
 
-router.post('/preferences', protect, savePreferences);
+router.post('/preferences',protect, savePreferences);
 router.put('/:id/preferences', updateUserPreferences);
 router.get("/:id", getUserById);
 

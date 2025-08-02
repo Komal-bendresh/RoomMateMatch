@@ -18,7 +18,6 @@ function App() {
   <Route path="/signup" element={<Register />} />
   <Route path="/login" element={<Login />} />
   <Route path="/survay" element={<SurveyPage />} />
-  <Route path="/result" element={<RoomAssignmentResult />} />
   <Route path="/playground" element={<AIPlayground />} />
   <Route path="/chat" element={<RoommateChat />} />
 

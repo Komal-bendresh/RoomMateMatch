@@ -19,7 +19,6 @@ const Header = () => {
         <NavLink to="/signup" className={linkClass}>Sign Up</NavLink>
         <NavLink to="/login" className={linkClass}>Login</NavLink>
         <NavLink to="/survay" className={linkClass}>Survey</NavLink>
-        <NavLink to="/result" className={linkClass}>Result</NavLink>
         <NavLink to="/playground" className={linkClass}>AI Playground</NavLink>
         <NavLink to="/chat" className={linkClass}>ChatRoom</NavLink>
       </nav>

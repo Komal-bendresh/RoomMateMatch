@@ -53,8 +53,54 @@
 
 // export default MatchButton;
 
+// import axios from "axios";
+// import { useAuth } from "../../AuthContext"; // adjust path if needed
+// import { useState } from "react";
+
+// const MatchButton = () => {
+//   const { user } = useAuth();
+//   const [matchResult, setMatchResult] = useState(null);
+//   const [error, setError] = useState("");
+
+//  const handleFindMatch = async () => {
+//   try {
+//     console.log("Sending userId to backend:", user?._id);
+//     const res = await axios.post("http://localhost:5000/api/v2/match", {
+//       userId: user.id,
+//     });
+
+//     console.log("✅ Match response:", res.data);
+//   } catch (err) {
+//     console.error("❌ Match error:", err.response?.data || err.message);
+//   }
+// };
+
+//   return (
+//     <div>
+//       <button onClick={handleFindMatch} className="btn btn-primary">
+//         Find My Roommate
+//       </button>
+
+//       {matchResult && (
+//         <div>
+//           <h3>🎉 Match Found!</h3>
+//           <p>Match: {matchResult.matchName}</p>
+//           <p>Score: {matchResult.score}</p>
+//           <p>Reason: {matchResult.reason}</p>
+//           <p>Assigned Room: {matchResult.assignedRoom}</p>
+//         </div>
+//       )}
+
+//       {error && <p className="text-red-500">{error}</p>}
+//     </div>
+//   );
+// };
+
+// export default MatchButton;
+
+
 import axios from "axios";
-import { useAuth } from "../../AuthContext"; // adjust path if needed
+import { useAuth } from "../../AuthContext";
 import { useState } from "react";
 
 const MatchButton = () => {
@@ -62,18 +108,24 @@ const MatchButton = () => {
   const [matchResult, setMatchResult] = useState(null);
   const [error, setError] = useState("");
 
- const handleFindMatch = async () => {
-  try {
-    console.log("Sending userId to backend:", user?._id);
-    const res = await axios.post("http://localhost:5000/api/v2/match", {
-      userId: user.id,
-    });
+  const handleFindMatch = async () => {
+    try {
+      console.log("Sending userId to backend:", user?._id);
 
-    console.log("✅ Match response:", res.data);
-  } catch (err) {
-    console.error("❌ Match error:", err.response?.data || err.message);
-  }
-};
+      const res = await axios.post("http://localhost:5000/api/v2/match", {
+        userId: user._id, // ✅ FIXED: use _id
+      });
+
+      console.log("✅ Match response:", res.data);
+
+      // ✅ Store match result for UI
+      setMatchResult(res.data.match || null);
+      setError("");
+    } catch (err) {
+      console.error("❌ Match error:", err.response?.data || err.message);
+      setError("❌ Matching failed. Try again.");
+    }
+  };
 
   return (
     <div>
@@ -87,7 +139,7 @@ const MatchButton = () => {
           <p>Match: {matchResult.matchName}</p>
           <p>Score: {matchResult.score}</p>
           <p>Reason: {matchResult.reason}</p>
-          <p>Assigned Room: {matchResult.assignedRoom}</p>
+          <p>Assigned Room: {matchResult.assignedRoom || "None"}</p>
         </div>
       )}
 
@@ -97,4 +149,3 @@ const MatchButton = () => {
 };
 
 export default MatchButton;
-

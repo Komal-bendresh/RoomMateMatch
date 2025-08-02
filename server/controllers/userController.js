@@ -18,13 +18,26 @@ const getUsers = async (req, res) => {
   }
 };
 const getUserById = async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (!user) return res.status(404).json({ error: "User not found" });
-  res.json(user);
+  try {
+    const user = await User.findById(req.params.id)
+      .populate("matchUserId", "name email preferences"); // ✅ updated to matchUserId
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 const savePreferences = async (req, res) => {
   const { cleanliness, sleepSchedule, StressManagement, guestPolicy, DowntimeStyle } = req.body;
+
+  console.log("🧠 Received preferences:", req.body);
+  console.log("🔐 From user:", req.user?.id);
 
   try {
     const user = await User.findById(req.user.id);
@@ -33,8 +46,11 @@ const savePreferences = async (req, res) => {
     user.preferences = { cleanliness, sleepSchedule, StressManagement, guestPolicy, DowntimeStyle };
     await user.save();
 
+    console.log("✅ Preferences saved:", user.preferences);
+
     res.status(200).json({ message: 'Preferences saved successfully', preferences: user.preferences });
   } catch (err) {
+    console.error("❌ Error saving preferences:", err.message);
     res.status(500).json({ message: err.message });
   }
 };

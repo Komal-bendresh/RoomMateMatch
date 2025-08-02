@@ -1,4 +1,3 @@
-// ✅ utils/assignRoom.js
 const Room = require("../models/Room");
 const User = require("../models/User");
 
@@ -49,12 +48,18 @@ async function assignRoom(userId, userName, matchName) {
       bestTwinRoom.isAvailable = false;
     await bestTwinRoom.save();
 
+    // ✅ Save match info to both users
     user.assignedRoom = {
       roomNumber: bestTwinRoom.roomNumber,
       type: bestTwinRoom.type,
       matchName: matchUser.name,
     };
+    user.match = matchUser._id;
+
+    matchUser.match = user._id;
+
     await user.save();
+    await matchUser.save();
 
     return {
       assignedRoom: bestTwinRoom.roomNumber,
@@ -90,6 +95,7 @@ async function assignRoom(userId, userName, matchName) {
       type: bestSingleRoom.type,
       matchName: null,
     };
+    user.match = null;
     await user.save();
 
     return {
